@@ -31,7 +31,7 @@ export default function ChatComponent() {
       navigate('/login');
       return;
     }
-    fetch('http://localhost:5000/api/mystories', {
+    fetch('https://story-generator-app-backend.onrender.com/api/mystories', {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -101,7 +101,7 @@ export default function ChatComponent() {
       setMessages(prev => [...prev, botMessage]);
 
       const token = localStorage.getItem('token');
-      await fetch('http://localhost:5000/api/story', {
+      await fetch('https://story-generator-app-backend.onrender.com/api/story', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

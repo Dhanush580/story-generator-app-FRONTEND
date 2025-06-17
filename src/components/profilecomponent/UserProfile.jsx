@@ -19,7 +19,7 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/profile', {
+      const res = await fetch('https://story-generator-app-backend.onrender.com/api/profile', {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -43,7 +43,7 @@ const UserProfile = () => {
 
   const handleSave = async () => {
     const token = localStorage.getItem('token');
-    const res = await fetch('http://localhost:5000/api/profile', {
+    const res = await fetch('https://story-generator-app-backend.onrender.com/api/profile', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ const UserProfile = () => {
     setEditMode({ name: false, password: false, profilePic: false });
 
     // Refresh data
-    const refreshed = await fetch('http://localhost:5000/api/profile', {
+    const refreshed = await fetch('https://story-generator-app-backend.onrender.com/api/profile', {
       headers: { Authorization: `Bearer ${token}` }
     });
     const refreshedUser = await refreshed.json();
