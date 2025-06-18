@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './UserProfile.css';
-import { FaPen, FaArrowLeft } from 'react-icons/fa';
+import { FaPen, FaArrowLeft, FaSpinner } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const UserProfile = () => {
@@ -22,6 +22,7 @@ const UserProfile = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [isSaving, setIsSaving] = useState(false); // New state for loading indicator
 
   const nameInputRef = useRef(null);
   const passwordInputRef = useRef(null);
@@ -74,28 +75,37 @@ const UserProfile = () => {
   };
 
   const handleSave = async () => {
-    const token = localStorage.getItem('token');
-    const res = await fetch('https://story-generator-app-backend.onrender.com/api/profile', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(formData)
-    });
+    setIsSaving(true); // Start loading
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('https://story-generator-app-backend.onrender.com/api/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
 
-    const data = await res.json();
-    setSuccessMessage(data.message);
-    setShowSuccessDialog(true);
-    setEditMode({ name: false, password: false, profilePic: false });
-    setShowPassword(false);
+      const data = await res.json();
+      setSuccessMessage(data.message);
+      setShowSuccessDialog(true);
+      setEditMode({ name: false, password: false, profilePic: false });
+      setShowPassword(false);
 
-    const refreshed = await fetch('https://story-generator-app-backend.onrender.com/api/profile', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const refreshedUser = await refreshed.json();
-    setUser(refreshedUser);
-    setFormData((prev) => ({ ...prev, password: '' }));
+      const refreshed = await fetch('https://story-generator-app-backend.onrender.com/api/profile', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const refreshedUser = await refreshed.json();
+      setUser(refreshedUser);
+      setFormData((prev) => ({ ...prev, password: '' }));
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      setSuccessMessage('Error saving profile. Please try again.');
+      setShowSuccessDialog(true);
+    } finally {
+      setIsSaving(false); // Stop loading regardless of success or failure
+    }
   };
 
   if (!user) return <div className="profile-container loading-message">Loading...</div>;
@@ -205,8 +215,18 @@ const UserProfile = () => {
           </div>
         </div>
 
-        <button onClick={handleSave} className="save-btn">
-          Save Changes
+        <button 
+          onClick={handleSave} 
+          className="save-btn"
+          disabled={isSaving} // Disable button while saving
+        >
+          {isSaving ? (
+            <>
+              <FaSpinner className="spin" /> Saving...
+            </>
+          ) : (
+            'Save Changes'
+          )}
         </button>
       </div>
 
