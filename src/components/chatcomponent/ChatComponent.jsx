@@ -4,7 +4,7 @@ import "../chatcomponent/ChatComponent.css";
 import { Link } from "react-router-dom";
 import { useNavigate,useLocation } from "react-router-dom";
 
-const client = new InferenceClient("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");
+const client = new InferenceClient("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");
 const LOADING_MESSAGES = [
   "Just a few more seconds",
   "Unleashing creativity",
