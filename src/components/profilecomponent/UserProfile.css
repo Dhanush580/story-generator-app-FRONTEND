@@ -7,6 +7,8 @@
   align-items: center;
   min-height: 100vh;
   background-image: url(../welcomecomponent/welcomebg.png);
+  background-position: center;
+  background-size: cover;
   overflow: hidden;
   position: relative;
   font-family: "Roboto Condensed", sans-serif;
@@ -356,4 +358,11 @@
 .profile-card h2 {
   margin: 0; /* Remove previous margin */
   /* Keep all other existing h2 styles */
+}
+.loading-message{
+  color: white;
+  text-align: center;
+  font-size: 48px;
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+
 }

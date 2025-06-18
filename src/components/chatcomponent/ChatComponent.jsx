@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import { InferenceClient } from "@huggingface/inference";
 import "../chatcomponent/ChatComponent.css";
 import { Link } from "react-router-dom";
-import { useNavigate,useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { FiMenu, FiX, FiPlus, FiUser, FiLogOut, FiCopy, FiSend, FiTrash2 } from "react-icons/fi";
+import { FaRobot, FaMagic, FaVideo } from "react-icons/fa";
+import { IoMdClose } from "react-icons/io";
 
 const client = new InferenceClient("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");
 const LOADING_MESSAGES = [
@@ -80,7 +83,6 @@ export default function ChatComponent() {
   }, [loading]);
 
   useEffect(() => {
-    // Handle back button/route navigation
     const handleBackButton = (e) => {
       e.preventDefault();
       setShowLogoutConfirm(true);
@@ -238,7 +240,6 @@ export default function ChatComponent() {
 
   const cancelLogout = () => {
     setShowLogoutConfirm(false);
-    // Push state again to prevent immediate popup on next back press
     window.history.pushState(null, null, window.location.pathname);
   };
 
@@ -256,12 +257,12 @@ export default function ChatComponent() {
     <div className="app-container">
       {/* Logout Confirmation Dialog */}
       {showLogoutConfirm && (
-        <div className="success-dialog-overlay">
-          <div className="success-dialog">
+        <div className="logout-confirm-overlay">
+          <div className="logout-confirm-dialog">
             <h3>Are you sure you want to logout?</h3>
             <div className="confirm-buttons">
-              <button className="dialog-close-btn" onClick={confirmLogout}>Yes</button>
-              <button className="dialog-close-btn" onClick={cancelLogout}>No</button>
+              <button className="confirm-btn" onClick={confirmLogout}>Yes</button>
+              <button className="cancel-btn" onClick={cancelLogout}>No</button>
             </div>
           </div>
         </div>
@@ -271,15 +272,11 @@ export default function ChatComponent() {
       <div className={`sidebar ${mobileSidebarOpen ? 'mobile-open' : ''}`}>
         <div className="sidebar-header">
           <button className="new-chat-btn" onClick={startNewConversation}>
-            <svg viewBox="0 0 24 24">
-              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-            </svg>
+            <FiPlus className="icon" />
             New Story
           </button>
           <button className="mobile-close-btn" onClick={() => setMobileSidebarOpen(false)}>
-            <svg viewBox="0 0 24 24">
-              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-            </svg>
+            <FiX className="icon" />
           </button>
         </div>
         
@@ -292,14 +289,12 @@ export default function ChatComponent() {
             >
               <div className="conversation-title">{conv.title}</div>
               <div className="conversation-date">{conv.date}</div>
-              <button 
+              {/* <button 
                 className="delete-conversation"
                 onClick={(e) => deleteConversation(conv.id, e)}
               >
-                <svg viewBox="0 0 24 24">
-                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                </svg>
-              </button>
+                <FiTrash2 className="icon" />
+              </button> */}
             </div>
           ))}
         </div>
@@ -307,16 +302,12 @@ export default function ChatComponent() {
         <div className="sidebar-footer">
           <Link to="/profile" className="profile-link">
             <button className="profile-btn">
-              <svg viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-              </svg>
+              <FiUser className="icon" />
               My Profile
             </button>
           </Link>
           <button className="logout-btn" onClick={() => setShowLogoutConfirm(true)}>
-            <svg viewBox="0 0 24 24">
-              <path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
-            </svg>
+            <FiLogOut className="icon" />
             Logout
           </button>
         </div>
@@ -324,23 +315,17 @@ export default function ChatComponent() {
       
       {/* Main Chat Area */}
       <div className="chat-container">
-        {/* Mobile sidebar toggle */}
-        <button 
-          className="mobile-sidebar-toggle"
-          onClick={() => setMobileSidebarOpen(true)}
-        >
-          <svg viewBox="0 0 24 24">
-            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-          </svg>
-        </button>
-        
-        {/* Chat Header */}
-        <div className="chat-header">
+        {/* Mobile header */}
+        <div className="mobile-header">
+          <button 
+            className="mobile-sidebar-toggle"
+            onClick={() => setMobileSidebarOpen(true)}
+          >
+            <FiMenu className="icon" />
+          </button>
           <h1 className="chat-title">BOT TALES</h1>
           <Link to="/profile" className="user-profile-mobile">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-            </svg>
+            <FiUser className="icon" />
           </Link>
         </div>
         
@@ -349,9 +334,7 @@ export default function ChatComponent() {
           {messages.length === 0 ? (
             <div className="empty-state">
               <div className="magic-wand-icon">
-                <span className="material-symbols-outlined robo-icon">
-                  smart_toy
-                </span>
+                <FaRobot className="robo-icon" />
               </div>
               <h3>Create Your Story</h3>
               <p>Enter a prompt below to generate a magical story</p>
@@ -368,9 +351,7 @@ export default function ChatComponent() {
                         onClick={() => copyToClipboard(message.content)}
                         title="Copy story"
                       >
-                        <svg viewBox="0 0 24 24" width="16" height="16">
-                          <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                        </svg>
+                        <FiCopy className="icon" />copy to clipboard
                       </button>
                     </div>
                   )}
@@ -425,9 +406,7 @@ export default function ChatComponent() {
               {loading ? (
                 <span className="spinner"></span>
               ) : (
-                <svg viewBox="0 0 24 24" width="24" height="24">
-                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                </svg>
+                <FiSend className="icon" />
               )}
             </button>
           </div>

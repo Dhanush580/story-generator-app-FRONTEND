@@ -98,7 +98,7 @@ const UserProfile = () => {
     setFormData((prev) => ({ ...prev, password: '' }));
   };
 
-  if (!user) return <div className="profile-container">Loading...</div>;
+  if (!user) return <div className="profile-container loading-message">Loading...</div>;
 
   return (
     <div className="profile-container">

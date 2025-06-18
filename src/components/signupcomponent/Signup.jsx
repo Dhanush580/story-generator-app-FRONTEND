@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './Signup.css';
 import { useNavigate,useLocation } from 'react-router-dom'; 
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { ClipLoader } from 'react-spinners'; // Import the spinner component
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ const Signup = () => {
     const [passwordStrength, setPasswordStrength] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // Add loading state
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -47,6 +49,8 @@ const Signup = () => {
             return;
         }
 
+        setIsLoading(true); // Start loading
+
         try {
             const response = await fetch('https://story-generator-app-backend.onrender.com/api/signup', {
                 method: 'POST',
@@ -70,6 +74,8 @@ const Signup = () => {
         } catch (err) {
             alert("Server error");
             console.error(err);
+        } finally {
+            setIsLoading(false); // Stop loading regardless of success/failure
         }
     };
 
@@ -168,8 +174,12 @@ const Signup = () => {
                         </button>
                     </div>
 
-                    <button type="submit" className="signup-btn">
-                        Sign Up
+                    <button type="submit" className="signup-btn" disabled={isLoading}>
+                        {isLoading ? (
+                            <ClipLoader color="#ffffff" size={20} />
+                        ) : (
+                            'Sign Up'
+                        )}
                     </button>
                 </form>
 
