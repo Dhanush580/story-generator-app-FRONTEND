@@ -18,6 +18,20 @@ const Signup = () => {
     const [isLoading, setIsLoading] = useState(false); // Add loading state
     const navigate = useNavigate();
     const location = useLocation();
+    const [securityQuestion, setSecurityQuestion] = useState({
+    question: '',
+    answer: ''
+    });
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+
+    const securityQuestions = [
+        "What was your childhood nickname?",
+        "What is the name of your first pet?",
+        "What city were you born in?",
+        "What is your mother's maiden name?",
+        "What was the name of your elementary school?", 
+        "What is your favorite teacher name?",
+    ];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -48,6 +62,10 @@ const Signup = () => {
             alert("Passwords don't match!");
             return;
         }
+        if (!securityQuestion.answer.trim()) {
+        alert("Please answer the security question");
+        return;
+    }
 
         setIsLoading(true); // Start loading
 
@@ -60,7 +78,9 @@ const Signup = () => {
                 body: JSON.stringify({
                     name: formData.name,
                     email: formData.email,
-                    password: formData.password
+                    password: formData.password,
+                    securityQuestion: securityQuestion.question,
+                    securityAnswer: securityQuestion.answer
                 })
             });
 
@@ -92,6 +112,31 @@ const Signup = () => {
     const toggleConfirmPasswordVisibility = () => {
         setShowConfirmPassword(!showConfirmPassword);
     };
+    const handleQuestionChange = () => {
+        setCurrentQuestionIndex((prevIndex) => 
+            (prevIndex + 1) % securityQuestions.length
+        );
+        setSecurityQuestion(prev => ({
+            ...prev,
+            question: securityQuestions[(currentQuestionIndex + 1) % securityQuestions.length],
+            answer: '' // Clear answer when changing question
+        }));
+    };
+
+    const handleSecurityAnswerChange = (e) => {
+        setSecurityQuestion(prev => ({
+            ...prev,
+            answer: e.target.value
+        }));
+    };
+
+    // Initialize question on component mount
+    useEffect(() => {
+        setSecurityQuestion({
+            question: securityQuestions[0],
+            answer: ''
+        });
+    }, []);
     
 
     return (
@@ -125,7 +170,9 @@ const Signup = () => {
                         <label className="input-label">Email Address</label>
                     </div>
 
-                    <div className="input-group password-input-group">
+                    <div className="password-fields-container">
+             <div className="input-group password-input-group">
+                    {/* Password input field */}
                         <input
                             type={showPassword ? "text" : "password"}
                             name="password"
@@ -143,18 +190,10 @@ const Signup = () => {
                         >
                             {showPassword ? <FaEyeSlash /> : <FaEye />}
                         </button>
-                        <div className="password-strength">
-                            <div 
-                                className="strength-bar" 
-                                style={{
-                                    width: `${passwordStrength}%`,
-                                    backgroundColor: getStrengthColor()
-                                }}
-                            ></div>
-                        </div>
                     </div>
 
                     <div className="input-group password-input-group">
+                        {/* Confirm Password input field */}
                         <input
                             type={showConfirmPassword ? "text" : "password"}
                             name="confirmPassword"
@@ -173,6 +212,37 @@ const Signup = () => {
                             {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                         </button>
                     </div>
+                </div>
+                {/* Add this after your confirm password field */}
+                <div className="security-question-group">
+                    <div className="question-header">
+                        <label>Security Question (For password recovery)</label>
+                        <button 
+                            type="button" 
+                            className="change-question-btn"
+                            onClick={handleQuestionChange}
+                        >
+                            Change Question
+                        </button>
+                    </div>
+                    
+                    <div className="question-text">
+                        {securityQuestion.question}
+                    </div>
+                    
+                    <div className="input-group">
+                        <input
+                            type="text"
+                            name="securityAnswer"
+                            value={securityQuestion.answer}
+                            onChange={handleSecurityAnswerChange}
+                            className="signup-input"
+                            placeholder=""
+                            required
+                        />
+                        <label className="input-label">Your Answer</label>
+                    </div>
+                </div>
 
                     <button type="submit" className="signup-btn" disabled={isLoading}>
                         {isLoading ? (

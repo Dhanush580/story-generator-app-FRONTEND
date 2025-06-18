@@ -236,3 +236,74 @@
 .password-toggle:focus {
     outline: none;
 }
+/* New container for side-by-side password fields */
+.password-fields-container {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+}
+
+.password-fields-container .input-group {
+    flex: 1; /* Makes both fields take equal width */
+    min-width: 0; /* Prevents flex items from overflowing */
+}
+
+/* Adjust the password strength meter to fit the new layout */
+.password-fields-container .password-strength {
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+}
+
+/* Responsive adjustments - stack on mobile */
+@media (max-width: 768px) {
+    .password-fields-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+/* Security Question Styles */
+.security-question-group {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.question-header label {
+    color: rgba(255, 255, 255, 0.8);
+    font-family: "Outfit", sans-serif;
+    font-size: 0.9rem;
+}
+
+.change-question-btn {
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    color: #64b5ff;
+    font-family: "Outfit", sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.change-question-btn:hover {
+    color: #64ffda;
+}
+
+.question-text {
+    color: white;
+    font-family: "Roboto Condensed", sans-serif;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border-left: 3px solid #64ffda;
+}
