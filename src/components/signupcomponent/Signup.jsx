@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Signup.css';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate,useLocation } from 'react-router-dom'; 
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Signup = () => {
@@ -15,6 +15,7 @@ const Signup = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -65,7 +66,7 @@ const Signup = () => {
                 alert(data.message || "Signup failed");
                 return;
             }
-            navigate('/story-generation');
+            navigate('/story-generation',{state:location.state});
         } catch (err) {
             alert("Server error");
             console.error(err);

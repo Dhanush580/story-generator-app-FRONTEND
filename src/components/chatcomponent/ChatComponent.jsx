@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import { InferenceClient } from "@huggingface/inference";
 import "../chatcomponent/ChatComponent.css";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 
-const client = new InferenceClient("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");
+const client = new InferenceClient("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");
 const LOADING_MESSAGES = [
-  "Just a few more seconds...",
-  "Unleashing creativity...",
-  "Crafting your story...",
-  "Almost there...",
-  "Final touches..."
+  "Just a few more seconds",
+  "Unleashing creativity",
+  "Crafting your story",
+  "Almost there",
+  "Final touches"
 ];
 
 export default function ChatComponent() {
@@ -23,7 +23,11 @@ export default function ChatComponent() {
   const [videoLoading, setVideoLoading] = useState(false);
   const [generatedVideo, setGeneratedVideo] = useState(null);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+  const [initialPromptProcessed, setInitialPromptProcessed] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const initialPrompt = location.state?.initialPrompt;
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -56,14 +60,39 @@ export default function ChatComponent() {
   }, []);
 
   useEffect(() => {
+    if (initialPrompt && !initialPromptProcessed) {
+      setInput(initialPrompt);
+      setInitialPromptProcessed(true);
+      setTimeout(() => {
+        handleSubmit(initialPrompt);
+      }, 500);
+    }
+  }, [initialPrompt, initialPromptProcessed]);
+
+  useEffect(() => {
     let interval;
     if (loading) {
       interval = setInterval(() => {
         setLoadingMessageIndex(prev => (prev + 1) % LOADING_MESSAGES.length);
-      }, 3000);
+      }, 5000);
     }
     return () => clearInterval(interval);
   }, [loading]);
+
+  useEffect(() => {
+    // Handle back button/route navigation
+    const handleBackButton = (e) => {
+      e.preventDefault();
+      setShowLogoutConfirm(true);
+    };
+
+    window.history.pushState(null, null, window.location.pathname);
+    window.addEventListener('popstate', handleBackButton);
+
+    return () => {
+      window.removeEventListener('popstate', handleBackButton);
+    };
+  }, []);
 
   const handleSubmit = async () => {
     if (!input.trim()) return;
@@ -202,6 +231,17 @@ export default function ChatComponent() {
     navigate('/login');
   };
 
+  const confirmLogout = () => {
+    setShowLogoutConfirm(false);
+    handleLogout();
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false);
+    // Push state again to prevent immediate popup on next back press
+    window.history.pushState(null, null, window.location.pathname);
+  };
+
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text)
       .then(() => {
@@ -214,6 +254,19 @@ export default function ChatComponent() {
 
   return (
     <div className="app-container">
+      {/* Logout Confirmation Dialog */}
+      {showLogoutConfirm && (
+        <div className="success-dialog-overlay">
+          <div className="success-dialog">
+            <h3>Are you sure you want to logout?</h3>
+            <div className="confirm-buttons">
+              <button className="dialog-close-btn" onClick={confirmLogout}>Yes</button>
+              <button className="dialog-close-btn" onClick={cancelLogout}>No</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar/Navbar */}
       <div className={`sidebar ${mobileSidebarOpen ? 'mobile-open' : ''}`}>
         <div className="sidebar-header">
@@ -260,7 +313,7 @@ export default function ChatComponent() {
               My Profile
             </button>
           </Link>
-          <button className="logout-btn" onClick={handleLogout}>
+          <button className="logout-btn" onClick={() => setShowLogoutConfirm(true)}>
             <svg viewBox="0 0 24 24">
               <path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
             </svg>
@@ -300,7 +353,7 @@ export default function ChatComponent() {
                   smart_toy
                 </span>
               </div>
-              <h3>Create Your First Story</h3>
+              <h3>Create Your Story</h3>
               <p>Enter a prompt below to generate a magical story</p>
             </div>
           ) : (
