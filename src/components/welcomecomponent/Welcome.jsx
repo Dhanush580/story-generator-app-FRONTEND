@@ -25,8 +25,7 @@ const Welcome = () => {
             state={{ initialPrompt: prompt }}
           >
             <button 
-              className='generatebtn' 
-              disabled={!prompt.trim()}
+              className='generatebtn'
             >
               <span>Generate Story</span>
             </button>

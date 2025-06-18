@@ -113,18 +113,16 @@
 }
 
 .mobile-close-btn {
+  text-align: center;
   display: none;
+  margin-left: 10px;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0.5rem;
+  color: white;
   transition: var(--transition);
 }
-
-.mobile-close-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
 .conversation-list {
   flex: 1;
   overflow-y: auto;
