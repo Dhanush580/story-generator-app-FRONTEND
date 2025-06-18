@@ -17,6 +17,8 @@ const Login = () => {
   const [securityQuestion, setSecurityQuestion] = useState('');
   const [securityAnswer, setSecurityAnswer] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [isSecurityAnswerVerified, setIsSecurityAnswerVerified] = useState(false);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,30 +66,58 @@ const Login = () => {
     }
   };
 
-  const handleForgotStep2 = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch('https://story-generator-app-backend.onrender.com/api/reset-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.email,
-          securityAnswer,
-          newPassword
-        })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert('Password reset successful');
-        setForgotMode(false);
-        setForgotStep(1);
-      } else {
-        alert(data.message || 'Reset failed');
-      }
-    } catch (err) {
-      alert('Server error');
+  const handleVerifyAnswer = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await fetch('https://story-generator-app-backend.onrender.com/api/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: formData.email,
+        securityAnswer,
+        newPassword: 'dummy' // dummy, will be ignored in backend for now
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setIsSecurityAnswerVerified(true); // show password field
+      alert('Security answer verified. You can now set a new password.');
+    } else {
+      alert(data.message || 'Answer verification failed');
     }
-  };
+  } catch (err) {
+    alert('Server error');
+  }
+};
+const handlePasswordReset = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await fetch('https://story-generator-app-backend.onrender.com/api/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: formData.email,
+        securityAnswer,
+        newPassword
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      alert('Password reset successful');
+      setForgotMode(false);
+      setForgotStep(1);
+      setIsSecurityAnswerVerified(false);
+    } else {
+      alert(data.message || 'Reset failed');
+    }
+  } catch (err) {
+    alert('Server error');
+  }
+};
+
 
   return (
     <div className="login-container">
@@ -116,34 +146,54 @@ const Login = () => {
             <p className="forgot-password" onClick={() => setForgotMode(true)} style={{ cursor: 'pointer', textAlign: 'center', marginTop: '10px', color: 'white'}}>Forgot Password?</p>
           </form>
         ) : (
-          <form className="login-form" onSubmit={forgotStep === 1 ? handleForgotStep1 : handleForgotStep2}>
-            <div className="input-group">
-              <input type="email" name="email" value={formData.email} onChange={handleChange} className="login-input" placeholder=" " required />
-              <label className="input-label">Email Address</label>
-            </div>
+          <form className="login-form" onSubmit={
+  forgotStep === 1
+    ? handleForgotStep1
+    : isSecurityAnswerVerified
+      ? handlePasswordReset
+      : handleVerifyAnswer
+}>
+  <div className="input-group">
+    <input type="email" name="email" value={formData.email} onChange={handleChange} className="login-input" placeholder=" " required />
+    <label className="input-label">Email Address</label>
+  </div>
 
-            {forgotStep === 2 && (
-              <>
-                <div className="input-group">
-                  <input type="text" value={securityQuestion} className="login-input" disabled />
-                  <label className="input-label">Security Question</label>
-                </div>
-                <div className="input-group">
-                  <input type="text" value={securityAnswer} onChange={(e) => setSecurityAnswer(e.target.value)} className="login-input" placeholder=" " required />
-                  <label className="input-label">Your Answer</label>
-                </div>
-                <div className="input-group">
-                  <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="login-input" placeholder=" " required />
-                  <label className="input-label">New Password</label>
-                </div>
-              </>
-            )}
+  {forgotStep === 2 && (
+    <>
+      <div className="input-group">
+        <input type="text" value={securityQuestion} className="login-input" disabled />
+        <label className="input-label">Security Question</label>
+      </div>
+      <div className="input-group">
+        <input type="text" value={securityAnswer} onChange={(e) => setSecurityAnswer(e.target.value)} className="login-input" placeholder=" " required />
+        <label className="input-label">Your Answer</label>
+      </div>
 
-            <button type="submit" className="login-btn">{forgotStep === 1 ? 'Get Question' : 'Reset Password'}</button>
-            <p style={{ textAlign: 'center', marginTop: '10px' }}>
-              <span style={{ cursor: 'pointer', color: 'gray' }} onClick={() => { setForgotMode(false); setForgotStep(1); }}>Back to Login</span>
-            </p>
-          </form>
+      {isSecurityAnswerVerified && (
+        <div className="input-group">
+          <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="login-input" placeholder=" " required />
+          <label className="input-label">New Password</label>
+        </div>
+      )}
+    </>
+  )}
+
+  <button type="submit" className="login-btn">
+    {forgotStep === 1
+      ? 'Get Question'
+      : isSecurityAnswerVerified
+        ? 'Reset Password'
+        : 'Verify Answer'}
+  </button>
+  <p style={{ textAlign: 'center', marginTop: '10px' }}>
+    <span style={{ cursor: 'pointer', color: 'gray' }} onClick={() => {
+      setForgotMode(false);
+      setForgotStep(1);
+      setIsSecurityAnswerVerified(false);
+    }}>Back to Login</span>
+  </p>
+</form>
+
         )}
 
         <div className="login-footer">
