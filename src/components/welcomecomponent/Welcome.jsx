@@ -31,6 +31,13 @@ const Welcome = () => {
             </button>
           </Link>
         </form>
+
+        <div className="team-link-container">
+          <p className="team-text">Curious who's behind the magic?</p>
+          <Link to="/our-team" className="signup-link">
+            Meet the creative minds of our team
+          </Link>
+        </div>
       </div>
     </main>
   );

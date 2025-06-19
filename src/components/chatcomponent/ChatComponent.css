@@ -630,6 +630,63 @@
   }
   
   .sidebar {
-    width: 100%;
+    width: 50%;
   }
+}
+/* Add these styles to your ChatComponent.css */
+
+.message-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.read-aloud-btn {
+  background: #4a6fa5;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.read-aloud-btn:hover {
+  background: #3a5a8f;
+}
+
+.read-aloud-btn.active {
+  background: #e74c3c;
+}
+
+.read-aloud-btn:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.read-aloud-btn .icon {
+  font-size: 14px;
+}
+
+.loading-dots span {
+  animation: blink 1.4s infinite both;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0% { opacity: 0.2; }
+  20% { opacity: 1; }
+  100% { opacity: 0.2; }
 }

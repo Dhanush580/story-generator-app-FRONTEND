@@ -232,3 +232,14 @@
         font-size: 1.1rem;
     }
 }
+.team-link-container {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.team-text {
+color: white;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
