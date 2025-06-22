@@ -111,7 +111,7 @@ export default function ChatComponent() {
         messages: [
           {
             role: "system",
-            content: "You are a story-writing assistant. Only generate stories. If the user asks anything else, say: 'Sorry, I can only help with story generation.'",
+            content: "You are a story-writing assistant. Only generate stories.If user is wishing you or greeting you, greet them in return, and if user praises you for good story generation, then say thank you, If the user asks anything else, say: 'Sorry, I can only help with story generation.', if user is asking to modify the story , then modify it.",
           },
           {
             role: "user",
